@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { SectionList, StyleSheet, Text, View } from 'react'; // 'react-native';
-import '../App.js';
+import '../App.tsx';
 import '../App.css';
 
 const TaskList = ({ tasks, projects1 }) => {
