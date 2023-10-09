@@ -3,6 +3,10 @@ import { SectionList, StyleSheet, Text, View } from 'react';
 import { TodoistApi } from "@doist/todoist-api-typescript";
 import './app.scss';
 import Dropdown from '../node_modules/react-bootstrap/Dropdown';
+import { Container } from 'react-bootstrap';
+import { useRef } from 'react';
+import ReactDOM from 'react-dom';
+
 
 // import axios from 'axios';
 // import TaskList from './components/TaskList';  
@@ -10,9 +14,61 @@ import Dropdown from '../node_modules/react-bootstrap/Dropdown';
 const TODOIST_TOKEN = "bf64581b00fb7777bb6865894d61fef991d44c3d"
 const api = new TodoistApi(TODOIST_TOKEN)
 
+
+var _proyecto = "Valor inicial";
+var _id = '*';
+var _proyecto;
+
+
 function App() {
   const [projects, setProjects] = useState([])
   const [tasks, setTasks] = useState([])
+  var proyectos;
+  var element, node, textnode, texto;
+
+  const changeProject = (id, proyecto, projects, tasks) => {
+    _proyecto = proyecto;
+    if (proyecto === "Todos") { _id = "*" } else { _id = id };
+    element = document.getElementById("tabla-s");
+    console.log('Elemento: ' + element);
+    if (element != null) element.remove();
+    node = document.createElement("div");
+    node.id = 'tabla-s';
+    textnode = document.createTextNode("Water");
+    element = document.getElementById("padre");
+    element.appendChild(node);
+    element = document.getElementById("tabla-s");
+    // Aquí tuve problemas para renderizar la tabla con el nuevo filtro,
+    // No encuentro como renderizar desde otra función que no sea la principal
+    return (
+      projects.filter((p) => (p.id == _id || _id == '*')).map(project => (
+        <div>
+          <table class="table table-striped table-bordered">
+            <thead>
+              <tr class="table-secondary">
+                <th data-field="id" data-width="10" data-width-unit="%">{project.id}</th>
+                <th data-field="name" data-width="50" data-width-unit="%">{project.name}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                tasks.filter((f) => f.projectId === project.id).map(task => (
+
+                  <tr>
+                    <td>{task.id}</td>
+                    <td>{task.content}</td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+          <p></p>
+        </div>
+      ))
+    )
+  }
+
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -33,6 +89,7 @@ function App() {
 
   return (
     <div class="container-sm">
+      < h3 > Listado de cosas por hacer utilizando la API de todoist:  </h3 >
       <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
           <a class="navbar-brand" href="#">Menú</a>
@@ -46,7 +103,7 @@ function App() {
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="https://todoist.com/app/today" target="_blank" >todoist.com</a>
-              </li> 
+              </li>
 
               <li class="nav-item">
                 <Dropdown>
@@ -54,9 +111,11 @@ function App() {
                     Proyecto
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
-                  <Dropdown.Item href="#/action-1">Todos</Dropdown.Item>
+                    <Dropdown.Item value="Todos" onClick={() => { changeProject("*", "Todos", projects, tasks) }} >Todos</Dropdown.Item>
                     {projects.map(project => (
-                      <Dropdown.Item href="#/action-1">{project.name}</Dropdown.Item>
+                      <Dropdown.Item key={project.id} value={project.name} onClick={() => { changeProject(project.id, project.name, projects, tasks) }}   >
+                        {project.name}
+                      </Dropdown.Item>
                     ))
                     }
                   </Dropdown.Menu>
@@ -65,44 +124,43 @@ function App() {
             </ul>
           </div>
 
-          <form class="d-flex" role="search">
+          {/* <form class="d-flex" role="search">
             <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
             </input>
             <button class="btn btn-outline-success" type="submit">Búsqueda</button>
-          </form>
+          </form> */}
         </div>
       </nav >
 
-      < h2 > Listado de Cosas por Hacer =+ </h2 >
+      <div id="padre">
+        <div id="tabla-s">
+          {projects.filter((p) => (p.id == _id || _id == '*')).map(project => (
+            <div>
+              <table class="table table-striped table-bordered">
+                <thead>
+                  <tr class="table-secondary">
+                    <th data-field="id" data-width="10" data-width-unit="%">{project.id}</th>
+                    <th data-field="name" data-width="50" data-width-unit="%">{project.name}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    tasks.filter((f) => f.projectId === project.id).map(task => (
 
-      <div>
-        {projects.map(project => (
-          <div>
-            <table class="table table-striped table-bordered">
-              <thead>
-                <tr class="table-secondary">
-                  <th data-field="id" data-width="10" data-width-unit="%">{project.id}</th>
-                  <th data-field="name" data-width="50" data-width-unit="%">{project.name}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {
-                  tasks.filter((f) => f.projectId === project.id).map(task => (
+                      <tr>
+                        <td>{task.id}</td>
+                        <td>{task.content}</td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
+              <p></p>
+            </div>
+          ))
+          }
 
-                    <tr>
-                      <td>{task.id}</td>
-                      <td>{task.content}</td>
-                    </tr>
-
-                  ))
-                }
-              </tbody>
-            </table>
-            <p></p>
-          </div>
-        ))
-        }
-
+        </div>
       </div>
     </div >
   )
