@@ -41,7 +41,7 @@ function App() {
     // Aquí tuve problemas para renderizar la tabla con el nuevo filtro,
     // No encuentro como renderizar desde otra función que no sea la principal
     return (
-      projects.filter((p) => (p.id == _id || _id == '*')).map(project => (
+      projects.filter((p) => (p.id === _id || _id === '*')).map(project => (
         <div>
           <table class="table table-striped table-bordered">
             <thead>
@@ -134,14 +134,14 @@ function App() {
 
       <div id="padre">
         <div id="tabla-s">
-          {projects.filter((p) => (p.id == _id || _id == '*')).map(project => (
+          {projects.filter((p) => (p.id === _id || _id === '*')).map(project => (
             <div>
               <table class="table table-striped table-bordered">
                 <thead>
                   <tr class="table-secondary">
                     <th data-field="id" data-width="10" data-width-unit="%">{project.id}</th>
                     <th data-field="name" data-width="50" data-width-unit="%">{project.name}</th>
-                  </tr>
+                  </tr> 
                 </thead>
                 <tbody>
                   {
